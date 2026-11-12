@@ -10,7 +10,7 @@ export async function onRequestPost({request, env}) {
   if (description.length > 1800) return json({error:"Deskripsi terlalu panjang (maksimal 1800 karakter)."}, 413);
 
   const prompt = `You are a commercial stock metadata assistant. Based only on the image description below, create accurate Adobe Stock-style metadata. Do not invent visual details. Return JSON only with keys title and keywords. title: concise English title, maximum 70 characters. keywords: array of 20-35 concise English search terms, most important first, no duplicates, no brands, no unsupported concepts. Content type: ${contentType}. Description: ${description}`;
-  const model = env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = env.GEMINI_MODEL || "gemini-3.8-flash";
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   let upstream;
   try {
