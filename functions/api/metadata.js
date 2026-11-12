@@ -18,9 +18,27 @@ export async function onRequestPost({request, env}) {
   } catch { return json({error:"Tidak dapat menghubungi layanan AI. Coba lagi nanti."}, 502); }
   const raw = await upstream.json().catch(()=>({}));
   if (!upstream.ok) return json({error:raw.error?.message || `Layanan AI merespons ${upstream.status}.`}, 502);
-  const text = raw.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("") || "";
-  let result;
-  try { result = JSON.parse(text); } catch { return json({error:"AI mengirim format yang tidak dapat dibaca. Coba ulangi."}, 502); }
+  const candidate = raw.candidates?.[0];
+const text = candidate?.content?.parts
+  ?.filter(p => p.text && !p.thought)
+  .map(p => p.text)
+  .join("")
+  .trim() || "";
+
+if (!text) {
+  return json({error:"Gemini tidak menghasilkan teks.", reason:candidate?.finishReason || "UNKNOWN"}, 502);
+}
+
+let result;
+try {
+  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("JSON tidak ditemukan");
+  result = JSON.parse(cleaned.slice(start, end + 1));
+} catch {
+  return json({error:"Format jawaban Gemini tidak valid.", preview:text.slice(0,300)}, 502);
+}
   const title = String(result.title || "").trim().slice(0,70);
   const keywords = Array.isArray(result.keywords) ? [...new Set(result.keywords.map(x=>String(x).trim()).filter(Boolean).map(x=>x.toLowerCase()))].slice(0,49) : [];
   if (!title || !keywords.length) return json({error:"Hasil AI kosong atau tidak lengkap."}, 502);
