@@ -1,0 +1,6 @@
+name = "vektorin-ai-v7"
+compatibility_date = "2026-11-01"
+pages_build_output_dir = "."
+
+# Set GEMINI_API_KEY as a secret in Cloudflare Pages settings.
+# Optional variable: GEMINI_MODEL = "gemini-2.5-flash"

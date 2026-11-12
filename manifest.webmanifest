@@ -1,0 +1,11 @@
+{
+  "name": "Vektorin AI",
+  "short_name": "Vektorin AI",
+  "description": "Local-first creative stock workspace with metadata audit tools.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07150f",
+  "theme_color": "#07150f",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
